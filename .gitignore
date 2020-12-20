@@ -1,2 +1,5 @@
 # Auxiliar files
 aux/
+
+# IDE
+.vscode/
