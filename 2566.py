@@ -1,4 +1,5 @@
 from sys import stdin
+from heapq import heappop, heappush
 
 
 class Constants:    
@@ -27,6 +28,26 @@ class DiGraph:
             self.__adj_list[vertex1] = [(vertex2, weight)]
 
 
+def dijkstra(graph, num_vertexes, start, end):
+    minheap = [(0, start)] # Format: [(weight: int, vertex: int), ...]
+    visited = [None] + [False] * num_vertexes
+
+    while minheap != []:
+        weight, vertex = heappop(minheap)
+
+        if not visited[vertex]:
+            visited[vertex] = True
+
+            if vertex == end:
+                return weight
+
+            for neigh_vertex, neigh_weight in graph.neighbourhood(vertex):
+                if not visited[neigh_vertex]:
+                    heappush(minheap, (weight + neigh_weight, neigh_vertex))
+    
+    return float('inf')
+
+
 def main():
     # N cities (i=1 source, i=N destination)
     # M paths
@@ -39,19 +60,13 @@ def main():
         }
 
         for i in range(M):
-            buffer = input().split()
             # Move from A -> B with cost R 
-            A, B, T = map(int, buffer[:3])
-            R = float(buffer[3])
+            A, B, T, R = map(int, input().split())
             mapping[T].add_edge((A, B), R)
         
-        # ;;;;;;;
-        # import json
-        # class Encode(json.JSONEncoder):
-        #     def default(self, o):
-        #         return o.__dict__
-        # print(json.dumps(mapping, cls=Encode, indent=2))
-        # ;;;;;;;
+        mincost = min([dijkstra(graph, N, 1, N) for graph in mapping.values()])
+
+        print(mincost)
 
 
 if __name__ == '__main__':
