@@ -33,13 +33,14 @@ def held_karp(d):
 
     for s in range(2, n):
         for S in combinations(range(1, n), s):
+            code = encode(S)
             for k in S:
-                S_minus_k = list(S)
-                S_minus_k.remove(k)
-                
-                C[(encode(S), k)] = min([ (C[(encode(S_minus_k), m)] + d[m][k]) for m in S if m != k ])
+                prev_code = code & ~encode([k])
+                C[(code, k)] = min([ (C[(prev_code, m)] + d[m][k]) for m in S if m != k ])
 
-    return min([ (C[(encode(range(1, n)), k)] + d[k][0]) for k in range(1, n) ])
+    code = encode(range(1, n))
+    
+    return min([ (C[(code, k)] + d[k][0]) for k in range(1, n) ])
 
 
 def main(coords):
