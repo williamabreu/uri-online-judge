@@ -1,4 +1,5 @@
 from itertools import combinations
+from heapq import heappush
 from sys import stdin
 
 
@@ -29,26 +30,40 @@ def held_karp(d):
     C = {}
 
     for k in range(1, n):
-        C[(encode([k]), k)] = d[0][k]
+        code = encode([k])
+        C[code] = {}
+        C[code][k] = d[0][k]
 
     for s in range(2, n):
-        for S in combinations(range(1, n), s):
+        for S in combinations(range(1, n), s): # TODO: optimize this!
             code = encode(S)
             for k in S:
                 prev_code = code & ~encode([k])
-                C[(code, k)] = min([ (C[(prev_code, m)] + d[m][k]) for m in S if m != k ])
+                minheap = []
+                for m in S:
+                    if m != k:
+                        heappush(minheap, C[prev_code][m] + d[m][k])
+                if code not in C:
+                    C[code] = {}
+                C[code][k] = minheap[0]
 
     code = encode(range(1, n))
+    minheap = []
+
+    for k in range(1, n):
+        heappush(minheap, C[code][k] + d[k][0])
     
-    return min([ (C[(code, k)] + d[k][0]) for k in range(1, n) ])
+    return minheap[0]
 
 
 def main(coords):
-    distances_matrix = [[0] * len(coords) for i in range(len(coords))]
+    n = len(coords)
+    distances_matrix = []
 
     # Initialize all peer-to-peer distances
     # It's like an Ajacency Matrix of an undirected graph
-    for i in range(len(coords)):
+    for i in range(n):
+        distances_matrix.append([0] * n)
         for j in range(i):
             d = distance2d(coords[i], coords[j])
             distances_matrix[i][j] = d
@@ -63,13 +78,10 @@ if __name__ == '__main__':
 
         if N != 0: 
             coords = []
-            x, y = map(int, input().split()) # Joao's home
-            coords.append((x, y)) # Joao is in coords[0]
-
-            for i in range(N):
-                x, y = map(int, input().split()) # Others' houses
+            for i in range(N + 1):
+                x, y = map(int, input().split()) # # Joao is in coords[0]
                 coords.append((x, y))
             
-            print(f'{main(coords):.2f}')
+            print('{:.2f}'.format( main(coords) ))
         else:
             exit(0)
