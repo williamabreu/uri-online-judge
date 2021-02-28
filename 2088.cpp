@@ -181,7 +181,6 @@ double main_call(pair<int, int>* coords, int size) {
             distances_matrix[i][j] = d;
             distances_matrix[j][i] = d;
         }
-        
     }
 
     return held_karp(distances_matrix, size);
@@ -203,7 +202,7 @@ int main() {
             coords[i] = make_pair(x, y); // Joao is in coords[0]
         }
 
-        cout << fixed << setprecision(2) << main_call(coords, N) << endl;
+        cout << fixed << setprecision(2) << main_call(coords, N + 1) << endl;
         
         cin >> N;
 
