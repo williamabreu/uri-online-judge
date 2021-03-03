@@ -5,25 +5,27 @@ class Appointment:
         self.end = end
         self.duration = end - begin
     
-    def __lt__(self, o):
-        return self.begin < o.begin
-
 
 if __name__ == '__main__':
 
     N = int(input())
+    appointments = []
 
-    X, Y = map(int, input().split())
-    current = Appointment(X, Y)
+    for i in range(N):
+        X, Y = map(int, input().split())
+        appointments.append(Appointment(X, Y))    
+    
+    appointments.sort(key=lambda x: (x.begin, x.duration))
+
+    current = appointments[0]
     no_overlap_count = 1
 
-    for i in range(N-1):
-        X, Y = map(int, input().split())
-        next = Appointment(X, Y)
+    for i in range(1, N):
+        next = appointments[i]
         if current.end <= next.begin:
             no_overlap_count += 1
             current = next
-        elif current.duration > next.duration:
+        elif current.duration > next.duration and current.begin != next.begin:
             current = next
 
     print(no_overlap_count)
